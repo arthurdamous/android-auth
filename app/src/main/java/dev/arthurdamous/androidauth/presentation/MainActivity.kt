@@ -1,7 +1,6 @@
 package dev.arthurdamous.androidauth.presentation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -9,11 +8,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import dev.arthurdamous.androidauth.presentation.notes.NotesScreen
 import dev.arthurdamous.androidauth.presentation.ui.theme.AndroidAuthTheme
 
 @AndroidEntryPoint
@@ -22,12 +24,23 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AndroidAuthTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    LoginScreen()
+                    val scaffoldState = rememberScaffoldState()
+
+                    Scaffold(
+                        scaffoldState = scaffoldState,
+                        topBar = {
+                            TopAppBar {
+                                Text(text = "My Notes App", fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+                            }
+                        }
+                    ) {
+                        //LoginScreen()
+                        NotesScreen()
+                    }
                 }
             }
         }

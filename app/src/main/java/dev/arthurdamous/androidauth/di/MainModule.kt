@@ -1,6 +1,5 @@
 package dev.arthurdamous.androidauth.di
 
-import android.util.Log
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -8,10 +7,12 @@ import dagger.hilt.components.SingletonComponent
 import dev.arthurdamous.androidauth.data.remote.UserApi
 import dev.arthurdamous.androidauth.data.repository.UserRepositoryImpl
 import dev.arthurdamous.androidauth.domain.repository.UserRepository
+import dev.arthurdamous.androidauth.domain.use_case.GetNotes
 import dev.arthurdamous.androidauth.domain.use_case.LoginUser
 import dev.arthurdamous.androidauth.domain.use_case.UserUseCases
 import dev.arthurdamous.androidauth.util.Constants.BASE_URL
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -25,6 +26,19 @@ object MainModule {
     @Singleton
     fun providesOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor {
+                val token =
+                    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNTgzNDc4ZTM4MjcwZTY5MmE4MTg3YiIsImlhdCI6MTY2NzMzMDM4NH0.kzwlWZNEMtpB5A7XCI_qQZ6ClAQfOTPxgdvXkTk0j7M"
+                val modifiedRequest = it.request().newBuilder()
+                    .addHeader("Authorization", "Bearer $token")
+                    .build()
+                it.proceed(modifiedRequest)
+            }
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                }
+            )
             .build()
     }
 
@@ -55,7 +69,8 @@ object MainModule {
         repository: UserRepository
     ): UserUseCases {
         return UserUseCases(
-            loginUser = LoginUser(repository)
+            loginUser = LoginUser(repository),
+            getNotes = GetNotes(repository)
         )
     }
 
